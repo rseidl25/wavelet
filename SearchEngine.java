@@ -10,21 +10,38 @@ class Handler implements URLHandler {
     public String handleRequest(URI url) {
         if (url.getPath().equals("/")) {
             String output = "";
-            for(int i=0; i<stringList.size(); i++){
-
+            if(stringList.size() == 0)
+                output = "none";
+            for(int i=0; i<stringList.size(); i++)
                 output += stringList.get(i) + "\r\n";
 
-            }
-
-            return output;
+            return String.format("Results:\r\n%s", output);
 
         }else {
             System.out.println("Path: " + url.getPath());
             if (url.getPath().contains("/add")) {
                 String[] parameters = url.getQuery().split("=");
                 if (parameters[0].equals("s")) {
+
                     stringList.add(parameters[1]);
-                    return String.format("%s added to list! \r\n It's now %d", parameters[1], stringList);
+
+                    String output = "";
+                    for(int i=0; i<stringList.size(); i++)
+                        output += stringList.get(i) + "\r\n";
+
+                    return String.format("%s added to list! It now contains:\r\n%s", parameters[1], output);
+                }
+            }
+            else if (url.getPath().contains("/search")) {
+                String[] parameters = url.getQuery().split("=");
+                if (parameters[0].equals("s")) {
+
+                    String matchingStrings = "";
+                    for(int i=0; i<stringList.size(); i++)
+                        if(stringList.get(i).contains(parameters[1]))
+                            matchingStrings += stringList.get(i) + "\r\n";
+    
+                    return String.format("Strings containing %s:\r\n%s", parameters[1], matchingStrings);
                 }
             }
             return "404 Not Found!";
